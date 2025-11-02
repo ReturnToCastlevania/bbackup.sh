@@ -3,8 +3,10 @@
 
 ### feautures:
 - easy creating of encrypted disk ( luks )
-- backuping data to encrypted ( or not ) disks trough rsync ( filters included )
-- getting data from remote linux / android device
-- sending data to remote linux device 
+- backuping data to encrypted disks trough rsync ( filters included )
+- getting data from remote linux / android device ( requires rsync installed on both sides )
+- flexible and lightweight
 
-- dont run that bro without understanding what youre doing. im not responsible for your actions and blah blah blah.
+### todo:
+- sending data to remote linux device
+
