@@ -1,0 +1,46 @@
+##### ----- Linux shit ----- #####
+# global Shit
+- *.swp
+- *.tmp
+- *Trash*/
+- .trash
+- .git/
+- .venv/
+- venv
+- .pki/
+- .cache/
+- .thumbnails/
+- .pending/
+
+# Telegram shit
+- KotatogramDesktop/
+- tdata/
+
+# Browsers shit
+- .tor project/
+- *firefox*/
+
+# Cli shit
+- .local/share/
+- .local/state
+- fish_history
+- wireplumber/
+- alacritty/themes/
+- icons/
+
+- old-photos/
+
+# DevOps shit
+- prom_data/
+- grafana/
+- npm/data/
+- gitea/gitea/
+
+
+
+##### ----- Android shit ----- #####
+- Android/
+- Downloads/
+- Manga/Downlod/
+- Daily-you/
+
