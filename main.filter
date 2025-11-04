@@ -28,14 +28,15 @@
 - alacritty/themes/
 - icons/
 
-- old-photos/
-
 # DevOps shit
 - prom_data/
 - grafana/
 - npm/data/
 - gitea/gitea/
 
+# Misc hsit
+- old-photos/
+- Archive/music/
 
 
 ##### ----- Android shit ----- #####
