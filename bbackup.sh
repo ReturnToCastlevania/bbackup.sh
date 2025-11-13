@@ -9,11 +9,11 @@ main() {
    backup /home/
 
 #   compress_android vayu 
-#   get_backup_android vayu
-#   get_backup_termux vayu
+   get_backup_android vayu
+   get_backup_termux vayu
 
-#   backupcrydisk /dev/sda1
-#   backupcrydisk /dev/sdc1 /dev/sdd1 /dev/sde1 /dev/sdf1 /dev/mmcblk0p1
+   backupcrydisk /dev/sda1
+   backupcrydisk /dev/sdc1 /dev/sdd1 /dev/sde1 /dev/sdf1 /dev/mmcblk0p1
 }
 
 
@@ -80,9 +80,17 @@ create_timestamp() {
 
 ##### ----- Getting data from current device ----- #####
 backup() {
-   rsync -avh --delete --delete-excluded --progress --exclude-from="$main_filter" $1 /bbackup/pc/$1
-   fuckupcheck "$1 > /bbackup/pc/$1"
+   for i in $@; do
+      mkdir -p /bbackup/pc$1
+      printf "# starting getting data from current pc: $i \n"
+      rsync -avh --delete --delete-excluded --progress --exclude-from="$main_filter" $i /bbackup/pc$i
+      fuckupcheck "$i > /bbackup/pc$i"
+
+      rm /bbackup/pc$i/!-!*!-!
+      touch "/bbackup/pc$i/!-!$(date)!-!"
+   done
 }
+
 
 
 
@@ -92,6 +100,8 @@ get_backup_android() {
       printf "# starting getting data from android-$i \n"
       rsync -avh --delete --delete-excluded --progress --exclude-from="$main_filter" $i:storage/shared/ /bbackup/android-$i/
       fuckupcheck "$i:storage/shared/ /bbackup/$i/"
+
+      touch "/bbackup/android-$i/!-!$(date)!-!"
    done
 }
 
@@ -101,6 +111,8 @@ get_backup_termux() {
       printf "# starting getting data from termux-$i \n"
       rsync -avh --delete --delete-excluded --progress --exclude-from="$main_filter" $i:. /bbackup/termux-$i/
       fuckupcheck "$i:/home/ /bbackup/$i/"
+
+      touch "/bbackup/termux-$i/!-!$(date)!-!"
    done
 }
 
@@ -111,6 +123,8 @@ get_backup_linux() {
       printf "# starting getting data from linux-$i \n"
       rsync -avh --delete --delete-excluded --progress --exclude-from="$main_filter" $i:/home/ /bbackup/linux-$i/
       fuckupcheck "$i:/home/ /bbackup/$i/"
+
+      touch "/bbackup/android-$i/!-!$(date)!-!"
    done
 }
 
@@ -131,7 +145,7 @@ backupcrydisk() {
       cryptsetup open $i crydiskasdf
       fuckupcheck "opening $i"
       mount -m /dev/mapper/crydiskasdf /mnt/crydiskasdf
-      rsync -avh --delete --delete-excluded --progress /backup /mnt/crydiskasdf
+      rsync -avh --delete --delete-excluded --progress /bbackup /mnt/crydiskasdf
       fuckupcheck "backup on $i"
       umount /mnt/crydiskasdf
       cryptsetup close /dev/mapper/crydiskasdf

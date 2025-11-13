@@ -7,8 +7,6 @@
 - getting data from remote linux / android device ( requires rsync installed on both sides )
 - flexible and lightweight
 
----
-
 # How to use
 - by default, **bbackup.sh will do nothing**
 - just open script in your favorite text editor and you probably will get it
