@@ -1,52 +1,6 @@
-##### ----- Manual ----- #####
-# newdisk - create new disk
-#  - eats parameters like /dev/sda /dev/sdc ...
-#  - can clear or shred disk
-#  - `newdisk /dev/sdc`
-#  - `echo c | newdisk /dev/sdf`
-
-# createtimestamp
-#  - creates timestamp in backup folder
-#  - its useful when you need to know when you did last backup
-#  - dont takes arguments
-#  - `createtimestamp`
-
-# backup
-#  - backups folders from current machine to /backup/
-#  - `backup /home/`
-#  - `backup /etc/nixos/`
-
-# get-backup-android
-#  - gets backup from ssh connected device
-#  - more specifically, from `/storadge/shared/` folder
-#  - `get-backup-android vayu`
-
-# get-backup-termux
-#  - same as get-backup-android, but gets backup from . folder
-#  - `get-backup-termux vayu`
-
-# get-backup-linux
-#  - same as get-backup-android, but gets backup from /home/ folder
-#  - probably, `get-backup-linux toshniba`
-
-# ccache-android
-#  - compresses **all** jpeg images on device. 
-#     - can greatly decrease size of backup
-#     - but eats quality of photos
-#     - but greatly increases backup time
-#  - `ccache-android vayu`
-
-# backupdisk
-#  - sends backup on crypted disk
-#  - `backupdisk /dev/sda1`
-
-
-
-
 ##### ----- Config ----- #####
-main_filter="/home/pled/code/scripts/main.filter"
+main_filter="/home/pled/code/scripts/bbackup/main.filter"
 ntfy= # check out https://github.com/binwiederhier/ntfy 
-
 
 main() {
 #   newdisk /dev/sdc
@@ -54,11 +8,12 @@ main() {
    backup /etc/nixos/
    backup /home/
 
-   ccache_android vayu 
-   get_backup_android vayu
-   get_backup_termux vayu
+#   compress_android vayu 
+#   get_backup_android vayu
+#   get_backup_termux vayu
 
-   backupdisk /dev/sda1
+#   backupcrydisk /dev/sda1
+#   backupcrydisk /dev/sdc1 /dev/sdd1 /dev/sde1 /dev/sdf1 /dev/mmcblk0p1
 }
 
 
@@ -118,33 +73,34 @@ newdisk() {
 
 ##### ----- Creating empty file with backup date ----- #####
 create_timestamp() {
-   mkdir -p /backup/pc/
-   rm /backup/!-!*!-!
-   touch "/backup/!-!$(date)!-!"
+   mkdir -p /bbackup/pc/
+   rm /bbackup/!-!*!-!
+   touch "/bbackup/!-!$(date)!-!"
 }
 
-##### ----- Getting data from this pc ----- #####
+##### ----- Getting data from current device ----- #####
 backup() {
-   rsync -avh --delete --delete-excluded --progress --exclude-from="$main_filter" $1 /backup/pc/$1
-   fuckupcheck "$1 > /backup/pc/$1"
+   rsync -avh --delete --delete-excluded --progress --exclude-from="$main_filter" $1 /bbackup/pc/$1
+   fuckupcheck "$1 > /bbackup/pc/$1"
 }
+
 
 
 ##### ----- Getting backup from android device ----- #####
 get_backup_android() {
    for i in $@; do
       printf "# starting getting data from android-$i \n"
-      rsync -avh --delete --delete-excluded --progress --exclude-from="$main_filter" $i:storage/shared/ /backup/android-$i/
-      fuckupcheck "$i:storage/shared/ /backup/$i/"
+      rsync -avh --delete --delete-excluded --progress --exclude-from="$main_filter" $i:storage/shared/ /bbackup/android-$i/
+      fuckupcheck "$i:storage/shared/ /bbackup/$i/"
    done
 }
 
-##### ----- Getting backup from termux senders ----- #####
+##### ----- Getting backup from termux device ----- #####
 get_backup_termux() {
    for i in $@; do
       printf "# starting getting data from termux-$i \n"
-      rsync -avh --delete --delete-excluded --progress --exclude-from="$main_filter" $i:. /backup/termux-$i/
-      fuckupcheck "$i:/home/ /backup/$i/"
+      rsync -avh --delete --delete-excluded --progress --exclude-from="$main_filter" $i:. /bbackup/termux-$i/
+      fuckupcheck "$i:/home/ /bbackup/$i/"
    done
 }
 
@@ -153,21 +109,23 @@ get_backup_termux() {
 get_backup_linux() {
    for i in $@; do
       printf "# starting getting data from linux-$i \n"
-      rsync -avh --delete --delete-excluded --progress --exclude-from="$main_filter" $i:/home/ /backup/linux-$i/
-      fuckupcheck "$i:/home/ /backup/$i/"
+      rsync -avh --delete --delete-excluded --progress --exclude-from="$main_filter" $i:/home/ /bbackup/linux-$i/
+      fuckupcheck "$i:/home/ /bbackup/$i/"
    done
 }
 
-ccache_android() {
+##### ----- Compress images on android device ----- #####
+compress_android() {
    for i in $@; do
-      ssh $i -t "find storage/shared/ -name '*.jpg' | xargs jpegoptim --max 30" # compress all photos in Archive folder
+      ssh $i -t "find storage/shared/ -name "*.jpg" -exec jpegoptim -S 256K {} \;"
+      ssh $i -t "find storage/shared/ -name "*.png" -exec pngquant --force --verbose --quality=40-100 --strip {} \;"
    done
 }
 
 
 
 ##### ----- Backup on crypted disks ----- #####
-backupdisk() {
+backupcrydisk() {
    for i in $@; do
       printf "# backuping on $i \n"
       cryptsetup open $i crydiskasdf
@@ -179,7 +137,6 @@ backupdisk() {
       cryptsetup close /dev/mapper/crydiskasdf
    done
 }
-
 
 
 main
