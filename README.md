@@ -45,7 +45,7 @@
  - probably, `get_backup_linux toshniba`
 
 ##### compress_android
- - compresses **all** jpeg images on device. 
+ - compresses **all** jpeg / png images on device. 
     - can greatly decrease size of backup
     - but eats quality of photos
     - but greatly increases backup time
