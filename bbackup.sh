@@ -9,11 +9,12 @@ main() {
    backup /home/
 
 #   compress_android vayu 
-   get_backup_android vayu
-   get_backup_termux vayu
+#   get_backup_android vayu
+#   get_backup_termux vayu
+#   get_backup_linux emacs
 
-   backupcrydisk /dev/sda1
-   backupcrydisk /dev/sdc1 /dev/sdd1 /dev/sde1 /dev/sdf1 /dev/mmcblk0p1
+#   backupcrydisk /dev/sda1
+#   backupcrydisk /dev/sdc1 /dev/sdd1 /dev/sde1 /dev/sdf1 /dev/mmcblk0p1
 }
 
 
@@ -124,7 +125,7 @@ get_backup_linux() {
       rsync -avh --delete --delete-excluded --progress --exclude-from="$main_filter" $i:/home/ /bbackup/linux-$i/
       fuckupcheck "$i:/home/ /bbackup/$i/"
 
-      touch "/bbackup/android-$i/!-!$(date)!-!"
+      touch "/bbackup/linux-$i/!-!$(date)!-!"
    done
 }
 
